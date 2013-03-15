@@ -1,0 +1,21 @@
+.ui-sortable-placeholder{
+	background:#f5f5f5;
+	border:none;
+	visibility:visible !important;
+	height:150px;
+}
+
+
+.ui-sortable > li:hover{
+	cursor:move;
+}
+
+.bigModal{
+   width:800px;
+   margin-left:-400px;
+}
+
+.jcrop-light .jcrop-handle{
+	background-color:#0088CC;
+	border-radius: 0;
+}
