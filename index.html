@@ -8,32 +8,54 @@
     <script src="js/vendor/bootstrap.js"></script>
     <script src="js/vendor/underscore-min.js"></script>
     <script src="js/vendor/backbone-min.js"></script>
-	<script src="js/vendor/backbone-localstorage.js"></script>
+    <script src="js/vendor/backbone-localstorage.js"></script>
 	
     <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-fileupload.css" rel="stylesheet">
     <link href="css/jquery.Jcrop.css" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
+		
 		<div class="container">
 		<div class="page-header">
-		<h1>Plugin avec Backbone...<small>avec un peu de bootstrap de twitter</small></h1>
+		<h1>Plugin mOveo<small>...avec un peu de bootstrap de twitter</small></h1>
 		</div>
 		
-		<h3>Gestion des images<br/><small>Gestion avancée des uploads d'images : ajouter une nouvelle image, supprimer une image, chagner l'ordre des images...</small></h3>
+		<h3>Gestion des images<br/><small>Gestion avancée des uploads d'images : ajouter une nouvelle image, supprimer une image, changer l'ordre des images...</small></h3>
 		
-		<p>
-		<a href="#myModal" role="button" class="btn btn-primary" data-toggle="modal"><i class="icon-upload icon-white"></i> Upload une nouvelle image</a>
-		</p>
+		<div class="row">
 		
-		<script type="text/template" id="doc-template">
-			<span><%= id %></span>
-			<span><%= title %></span>
-			<span><%= text %></span>
-			<span><%= keyword %></span>
-		</script>
+			<div class="span12" id="upload-part">
+			<form enctype="multipart/form-data" class="formfileupload">
+				<div class="row">
+				<div class="span3">
+				<div class="fileupload fileupload-new" data-provides="fileupload">
+					<span class="btn btn-file btn-primary"><span class="fileupload-new"><i class="icon-upload icon-white"></i> Upload une nouvelle image</span><input type="file" id="mFile" name="mFile"/></span>
+					<span class="fileupload-preview"></span>
+				</div>
+				</div>
+				<div class="span9">
+				<div class="progress-upload">
+				<div class="progress progress-striped active">
+					<div class="bar" style="width: 0%;"></div>
+				</div>
+				<p class="text"><small>fichier : monFichier.jpg // en chargement : <span class="percentage">10%</span></small></p>
+				</div>
+				</div>
+				</div>
+				<input type="button" value="Upload" />
+				</form>
+				
+				
+				<!--<a href="#myModal" role="button" class="btn btn-primary" data-toggle="modal"><i class="icon-upload icon-white"></i> Upload une nouvelle image</a>-->
+			</div>
+
+			
+		</div>
+		
 
 
 		<div id="doc-container-template" >
@@ -41,15 +63,63 @@
 		</div>
 		
 		<script type="text/template" id="docs-collection-template">
-        <ul id='doc-container' class="thumbnails">
-          <% _.each(images, function(doc) { %>
-			<li class="span3" id="<%= doc.id %>" attr-id="<%= doc.id %>"><img src="<%= doc.url %>"></li>
-          <% }); %>
-        </ul>
-    </script>
+			<ul id='doc-container' class="thumbnails">
+			  <% _.each(images, function(doc) { %>
+				<%if (doc.type == "main_thumb") {%>
+				<li class="span3" id="<%= doc.id %>" attr-id="<%= doc.id %>"><img src="<%= doc.url %>"></li>
+				<%}%>
+			  <% }); %>
+			</ul>
+		</script>
 
     <div id='docs-collection-container'></div>
+	
+	
+	<div id="modals-container">
+		<div id="myModal" class="modal hide fade bigModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<!--<div>-->
+		<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h4 id="myModalLabel">Création des miniatures</h4>
+		</div>
+		<div class="modal-body" id="cropped-body">
+		
+				<script type="text/template" id="container-cropped-template">
+						<% $id = 0 %>
+						<% _.each(thumbnails, function(img) { %>
+							<li <%if($id==0) {%>class='active'<%} %>><a href="#<%= img.id %>"><%= img.size[0] %> x <%= img.size[1] %></a></li>
+							<% $id ++;%>
+						<% }); %>
+				</script>
+				
+				<script type="text/template" id="cropped-image">
+							<li id="img-<%= id %>"><img src="<%= url %>" class="target" id="target-<%= id %>"></li>
+				</script>
+				
+				<div id="target-cropped-container"></div>
+				
+				<div class="row-fluid">
+					<div class="span9">
+						<div id="cropped-container"></div>
+					</div>
+					
+					<div class="span3">
+					<h5><i class="icon-th"></i> Tailles miniatures</h5>
+					<ul class="nav nav-pills nav-stacked" id="nav-image-size">
+						
+					</ul>
+					</div>
+				</div>
+			
+		</div>
+		<div class="modal-footer">
+		<button class="btn btn-primary" id="generate-image">Générer les images</button>
+		</div>
+		</div>
+	</div>
+	
 	<hr/>
+	
 	<div class="row">
 		<div class="span4">
 		<h4>C'est une colonne</h4>
@@ -67,34 +137,6 @@
 		<p>Suspendisse potenti. Nulla eleifend interdum leo, volutpat pharetra massa tristique ut. Praesent vitae enim arcu.</p>
 		</div>
 	</div>
-	
-	
-	<div id="modals-container">
-		<div id="myModal" class="modal hide fade bigModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<!--<div>-->
-		<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		<h4 id="myModalLabel">2/ Création des miniatures</h4>
-		</div>
-		<div class="modal-body">
-		<div class="row-fluid">
-			<div class="span9"><img src="http://localhost/plugin-upload/img/0001.jpg" id="target"/></div>
-			<div class="span3">
-			<h5><i class="icon-th"></i> Tailles miniatures</h5>
-			<ul class="nav nav-pills nav-stacked">
-				<li class="active"><a href="#">300x500</a></li>
-				<li><a href="#">250x250</a></li>
-				<li><a href="#">300x180</a></li>
-			</ul>
-			</div>
-			
-		</div>
-		</div>
-		<div class="modal-footer">
-		<button class="btn btn-primary" id="generate-image">Générer les images</button>
-		</div>
-		</div>
-	</div>	
 	
 	</div>
 </body>

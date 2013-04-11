@@ -66,49 +66,7 @@
 			coord : "",
 			url : "",
 			size : "",
-			type : "",
-			img_size : ""
-		},
-		
-		initialize: function(){
-		
-			this.set("id", this.cid);
-		
-			//this.set('coord', [ 0, 0, this.get('size')[0], this.get('size')[1]]);
-			w = this.get('size')[0];
-			h = this.get('size')[1];
-			ratio = (w / h >= 1) ? "horizontal" : "vertical";
-
-			
-			if(ratio == "horizontal"){
-			
-
-				initW = this.get('img_size')[0];
-				initH = initW * (h / w);
-				
-				initX = 0;
-				initY = this.get('img_size')[1] / 2 - initH /2;
-			}
-			else
-			{
-				initH = this.get('img_size')[1];
-				initW = initH * (w / h);
-				initX = this.get('img_size')[0] / 2 - initW /2;
-				initY = 0;
-			}
-
-			
-			this.set('coord', {
-					x : initX,
-					y : initY,
-					w : initW,
-					h : initH,
-					x2 : initX + initW,
-					y2 : initY + initH
-			});
-			
-			console.log(this.get('coord'))
-		
+			type : ""
 		}
 	
 	})
@@ -122,16 +80,10 @@
 	
 	// View de la collection de recadreurs d'image
 	window.ThumbnailCroppersView = Backbone.View.extend({
-		//el : $('#target-cropped-container'),
-		el : $('#cropped-body'),
+		el : $('#target-cropped-container'),
 		initialize: function(){
 			this.template = _.template($("#container-cropped-template").html());
-			this._meta = {
-			
-				currentModel : null,
-				countReturn : 0
-				
-			};	
+			this._meta = {};	
 		},
 		
 		meta: function(prop, value) {
@@ -142,105 +94,46 @@
 			}
 		},
 		
-		onCropSelect: function(e){
-			//_this.meta('currentModel').set('coord', e);
-			//console.log("On change les coords : ", _this.meta('currentModel').get('coord'));
-			_this.meta('currentModel').set('coord',e);
-		
-		},
-		
-		events : {
-			
-			// Au clic sur le menu de thumnails on change la colonne de gauche de la popup
-			'click #nav-image-size a' : "changeTumbnail"
-        },
-		
-		changeTumbnail : function(e) {
-		
-			destURL = $(e.target).attr('href').replace('#','');
-			
-			_this.meta('currentModel', _this.collection.get(destURL));
-			
-			currentCoord = _this.meta('currentModel').get('coord');
-			currentSize = _this.meta('currentModel').get('size');
-			
-			console.log(_this.meta('currentModel'), " : ", _this.meta('currentModel').get('coord'));
-			
-			_this.meta('jcropAPI').setOptions({aspectRatio: currentSize[0]/currentSize[1]});
-			_this.meta('jcropAPI').setSelect([currentCoord.x, currentCoord.y, currentCoord.x2, currentCoord.y2]);
-			
-			
-			
-		
-			destURL = $(e.target).attr('href').replace('#','');
-			$("#nav-image-size li").removeClass('active');
-			$(e.target).parent().addClass('active');
-			$("#cropped-container li").hide();
-			$("#cropped-container li#img-" + destURL).fadeIn(200);
-			e.preventDefault();
-		},
-		
 		render : function() {
-			tmbnls = this.collection.toJSON();
+			console.log(this.meta("someProperty"));
 			var renderedContent = this.template({ thumbnails : this.collection.toJSON()});
 			
 			//$(this.el).html(renderedContent);
-			$(this.el).find("#nav-image-size").html(renderedContent);
+			$(this.el).html(renderedContent);
 			
-			$(this.el).find("#cropped-container").html("<img src='"+this.meta("imgURL")+"' id='target'/>");
+			$(this.el).html("<img src='"+this.meta("someProperty")+"' id='target'/>");
 			
-			_this = this;
-			
-			
-			this.collection.each(function(model){
-				
-				var modelView = new ThumbnailCropperView({model : model});
-				
-			})
-			
-			this.meta('currentModel', this.collection.models[0]);
-			
-			
-			setTimeout(function(){
-			
-			jcrop = $(_this.el).find('#target').Jcrop({
+			$(this.el).find('#target').Jcrop({
 				
 				bgOpacity: 0.3,
 				allowSelect: false,
 				bgColor: '#212121',
-				addClass: 'jcrop-light model-',
-				aspectRatio: _this.meta('currentModel').get('size')[0] / _this.meta('currentModel').get('size')[1],
-				setSelect:   [ _this.meta('currentModel').get('coord').x, _this.meta('currentModel').get('coord').y, _this.meta('currentModel').get('coord').x2, _this.meta('currentModel').get('coord').y2],
-				trueSize: [_this.meta("imgSize")[0],_this.meta("imgSize")[1]],
-				boxWidth: 500,
-				boxHeight: 400,
-				onSelect: _this.onCropSelect
-				
-				
-			},function(){
-				_this.meta('jcropAPI',this); 
-				$(this.ui.holder).css("margin-left", (500 - $(this.ui.holder).width()) / 2 + "px");
-				$(this.ui.holder).css("margin-top", (400 - $(this.ui.holder).height()) / 2 + "px");
+				addClass: 'jcrop-light model-'+ _this.model.id,
+				aspectRatio: 200 / 200,
+				setSelect:   [ 0, 0, 200, 200]
 				
 			});
-		
 			
-			},200,_this)
+			_this = this;
 			
-			
-			
-			
-			
+			/*this.collection.each(function(model){
+				
+				var modelView = new ThumbnailCropperView({model : model});
+				modelView.render($(_this.el).find('#cropped-container'));
+				
+			})*/
 			
 			return this;
 		},
 		
 		generateImages : function(e) {
 			_this = this;
-			this.meta("countReturn", 0);
-			this.meta("arrayReturn", []);
 			this.collection.each(function(model){
-			coord = model.get("coord");
+				console.log(model);
+				coord = model.get('jcrop_api');
+				console.log(coord);
+				coord = coord.tellSelect();
+				
 				$.ajax({
 					type: "POST",
 					url : "js/crop.php",
@@ -252,7 +145,7 @@
 						w: coord.w, 
 						tw: model.get('size')[0], 
 						th: model.get('size')[1], 
-						src: $('#target').attr('src'), 
+						src: $('#target-' + model.get('id')).attr('src'), 
 						name: 'img-generate_' + model.get('size')[0] + "x" + model.get('size')[1],
 						type: model.get('type')
 						},						
@@ -264,14 +157,7 @@
         },
 		
 		afterImagesGenerate : function(data){
-			arr = _this.meta("arrayReturn");
-			arr.push(data);
-			_this.meta("countReturn", _this.meta("countReturn") + 1);
-			
-			// Si le nb de miniatures générées est égal au nombre de model présent dans la collection
-			// On lance le trigger de fin
-			if(_this.meta("countReturn") >= _this.collection.length)
-				_this.trigger("afterImagesGenerate",arr, $('#target').attr('src'));
+			_this.trigger("afterImagesGenerate",data);
 		}
 	
 	
@@ -282,11 +168,35 @@
 		el : $('#modals-container'),
 		
 		initialize : function() {
+			this.template = _.template($("#cropped-image").html());
 			
+			_this = this;
 
 		},
 		
 		render : function(el){
+			var renderedContent = this.template(this.model.toJSON());
+			_this = this;
+
+			el.append(renderedContent);
+			
+			_this.wRatio = _this.model.get('size')[0];
+			_this.hRatio = _this.model.get('size')[1];
+			
+			_this.w = _this.model.get('img_size')[0];
+			_this.h = _this.model.get('img_size')[1];
+		
+			jcropAPI = $(_this.el).find('#target').Jcrop({
+				
+				bgOpacity: 0.3,
+				bgColor: '#212121',
+				addClass: 'jcrop-light model-'+ _this.model.id,
+				aspectRatio:  _this.wRatio / _this.hRatio,
+				setSelect:   [ 0, 0, _this.w, _this.l]
+				
+			});
+			_this.model.set('jcrop_api', jcropAPI);
+			
 			
 			
 		
@@ -308,13 +218,24 @@
             //Nothing to do now
 
         },
-		
         events : {
+		
 			//Au clic sur le bouton generate-image on déclenche l'event 'generateImages'
-            'click #generate-image' : function(){ 
-						this.trigger('generateImages'); 
-			},
+            'click #generate-image' : function(){ this.closeModal(); this.trigger('generateImages'); },
+			
+			// Au clic sur le menu de thumnails on change la colonne de gauche de la popup
+			'click #nav-image-size a' : "changeTumbnail"
         },
+		
+		changeTumbnail : function(e) {
+		
+			destURL = $(e.target).attr('href').replace('#','');
+			$("#nav-image-size li").removeClass('active');
+			$(e.target).parent().addClass('active');
+			$("#cropped-container li").hide();
+			$("#cropped-container li#img-" + destURL).fadeIn(200);
+			e.preventDefault();
+		},
        
 		
 		closeModal : function(){
@@ -367,7 +288,6 @@
 			$.ajax({
 				url: 'js/upload.php',  //server script to process data
 				type: 'POST',
-				dataType:"json",
 				xhr: function() {  // custom xhr
 				myXhr = $.ajaxSettings.xhr();
 				if(myXhr.upload){ // check if upload property exists
@@ -413,6 +333,7 @@
 			_this = _this;
 			setTimeout(function(){
 				_this.trigger("endUpload",data);
+				console.log($(_this.el));
 				$(_this.el).find('.progress-upload').hide();
 			},2000)
 			
@@ -437,28 +358,19 @@
 	// et écoute les trigger des autres modèles
 	window.MainModel = Backbone.Model.extend({
 		
-		defaults:{
-			url_images: "/",
-			thumbs : null
-		},
-		
-		
 		initialize : function() {
 			
 			// On créé la collection qui gérera les images du plugin
 			this.images = new Images();
 			this.img1 = new Image({id:"250", url:"img/01.jpg", type:'main_thumb'});
-			this.img2 = new Image({id:"630", url:"img/03.jpg", type:'main_thumb'});
+			this.img2 = new Image({id:"630", url:"img/02.jpg", type:'main_thumb'});
+			this.img3 = new Image({id:"150", url:"img/03.jpg", type:'main_thumb'});
 
-			this.images.add([this.img1, this.img2]);
+			this.images.add([this.img1, this.img2, this.img3]);
 			
 			// Et le rendu de la collection d'images
 			this.view = new ImagesCollectionView({collection : this.images});
 			this.view.render();
-			
-			// On créé la popup modal
-			this.modalView = new ModalView();
-			this.modalView.bind('generateImages', this.generateImages, this);
 			
 
 			
@@ -470,49 +382,43 @@
 			this.uploaderView = new UploaderView({model : this.images});
 			this.uploaderView.bind('endUpload', this.generateImageCropper, this);
 			
-			
 			// On génére une popup avec les différents formats d'images pour les miniatures
 			//this.generateImageCropper();
 
         },
 		
-		generateImageCropper : function (d){
+		generateImageCropper : function (data){
+					
 			
+			// On créé un recadreur d'image (qui appellera Jcrop)
+			this.preload([
+				'http://localhost/plugin-upload/js/' + data
+			]);
 			
-			$('body').find(".progress-upload").hide();
+			this.thumbnailCropper1 = new ThumbnailCropper({id:'255', size: [150,150], img_size : [570, 350], url:"http://localhost/plugin-upload/js/" + data, type:"150x150"});
+			this.thumbnailCropper2 = new ThumbnailCropper({id:'230', size: [260,180], img_size : [570, 350], url:"http://localhost/plugin-upload/js/" + data, type:"main_thumb"});
+			this.thumbnailCropper3 = new ThumbnailCropper({id:'250', size: [300,120], img_size : [570, 350], url:"http://localhost/plugin-upload/js/" + data, type:"300x120"});
 			
-			
-			imgname = d.filename;
-			imgsize = d.imagesize;
-			
-			if(this.get("thumbs") == null) return;
 			
 			// On créé la collection qui gérera les recadreurs d'images
 			this.thumbnailcroppers = new ThumbnailCroppers();
-			
-			
-			_.each(this.get("thumbs"), function(e){
-			
-				thumbnailCropper = new ThumbnailCropper({size: [e.h,e.w], img_size:imgsize, type:e.type});
-				this.thumbnailcroppers.add(thumbnailCropper);
-				
-			},this)
-			
-			
-			
-			
+			this.thumbnailcroppers.add([this.thumbnailCropper1, this.thumbnailCropper2, this.thumbnailCropper3]);
 			
 			// Et le rendu de la collection de recadreur
 			this.thumbnailcroppersView = new ThumbnailCroppersView({ collection : this.thumbnailcroppers});
-			this.thumbnailcroppersView.meta("imgURL", this.get('url_images') + imgname);
-			this.thumbnailcroppersView.meta("imgSize", [imgsize[0], imgsize[1]]);
+			this.thumbnailcroppersView.meta("someProperty", "http://localhost/plugin-upload/js/" + data);
 			this.thumbnailcroppersView.render();
 			
-			this.thumbnailcroppersView.bind('afterImagesGenerate', this.afterGenerateImage, this);
-
+			// On passe en parametre
+			
+			// On créé la popup modal
+			this.modalView = new ModalView();
 			this.modalView.showModal();
 			//this.thumbnailGeneratorView = new ThumbnailCropperView({ model : this.thumbnailCropper1 });
-		
+			
+			this.modalView.bind('generateImages', this.generateImages, this);
+			
+			this.thumbnailcroppersView.bind('afterImagesGenerate', this.afterGenerateImage, this);
 		
 		
 		},
@@ -522,7 +428,6 @@
 		},
 		
 		generateImages : function(){
-			
 			this.thumbnailcroppersView.generateImages();
 			
 		},
@@ -535,22 +440,9 @@
 			});
 		},
 		
-		afterGenerateImage: function(arr, temp){
-			
-			_.each(arr, function(e){
-				var image =  new Image({id:e.id, url:e.url, type:e.type, name: e.name});
-				console.log("ID de l'image : ", e.id)
-				this.images.add(image);
-			}, this)
-			
-			
-			//Suppression du fichier temp
-			console.log(temp);
-			$.ajax({
-				url: 'js/delete.php',  //server script to process data
-				type: 'POST',
-				data: { url : temp }
-			});
+		afterGenerateImage: function(data){
+			var image =  new Image({id:data.id, url:data.url, type:data.type, name: data.name});
+			this.images.add(image);
 			
 			this.modalView.closeModal();
 		}
@@ -558,26 +450,7 @@
 	})
 	
 	//Lancement du programme
-	mainModel = new MainModel({
-		"url_images" : "js/",
-		"thumbs" : [{
-				h : "200",
-				w : "350",
-				type : "200x250"
-			 },{
-				h : "300",
-				w : "300",
-				type : "300x300"
-			},{
-				h : "260",
-				w : "180",
-				type : "main_thumb"
-				
-			}
-			
-			
-		]
-	});
+	mainModel = new MainModel();
 	
 	
 })(jQuery);
