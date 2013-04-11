@@ -115,7 +115,7 @@
 	
 	// Collection de recadreur d'image
 	window.ThumbnailCroppers = Backbone.Collection.extend({
-		model:ThumbnailCropper,
+		model:ThumbnailCropper
 		
 	
 	})
