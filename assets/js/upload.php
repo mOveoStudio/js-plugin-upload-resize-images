@@ -1,5 +1,5 @@
 <?php
-$UploadDirectory    = 'temp/'; //Upload Directory, ends with slash & make sure folder exist
+$UploadDirectory    = '../temp/'; //Upload Directory, ends with slash & make sure folder exist
 
 
 if (!file_exists($UploadDirectory)) {
@@ -58,7 +58,7 @@ if (!file_exists($UploadDirectory)) {
         //mysql_select_db($MySql_databasename,$dbconn);
         //@mysql_query("INSERT INTO file_records (file_name, file_title, file_size, uploaded_date) VALUES ('$NewFileName', '$FileTitle',$FileSize,'$uploaded_date')");
         //mysql_close($dbconn);
-		$arr = array('filename' => $UploadDirectory . $NewFileName, 'imagesize' => getimagesize($UploadDirectory . $NewFileName) );
+		$arr = array('filename' => $NewFileName, 'imagesize' => getimagesize($UploadDirectory . $NewFileName) );
         echo json_encode($arr);
 
    }else{
