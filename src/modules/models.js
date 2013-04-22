@@ -30,7 +30,7 @@ app.Models.main = Backbone.Model.extend({
             app.views.ImagesView.render();
 
             // On créé la popup modal
-            this.modalView = new ModalView();
+            this.modalView = new app.Views.ModalView();
             this.modalView.bind('generateImages', this.generateImages, this);
 
 

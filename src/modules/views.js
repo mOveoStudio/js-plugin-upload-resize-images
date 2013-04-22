@@ -3,16 +3,52 @@
  * LES VUES DE L'APPLICATION
  *
  */
-// Vue principale. Détecte les actions utilisateurs sur les composants de la page HTML
+
+
+
+/*
+ * VUE PRINCIPALE DE L'APPLI
+ */
 app.Views.main = Backbone.View.extend({
 
-
+    
 });
 
-// View de la collection de recadreurs d'image
+
+
+
+
+/*
+ * LES VUES CONCERNANT LE CROP DE MINIATURES
+ */
+
+
+// Vue de la fenetre modal
+// TODO : Supprimer et remplacer
+app.Views.ModalView = Backbone.View.extend({
+        el : $('#modals-container'),
+		
+        events : {
+            //Au clic sur le bouton generate-image on déclenche l'event 'generateImages'
+            'click #generate-image' : function(){ 
+                this.trigger('generateImages'); 
+            }
+        },
+		
+        closeModal : function(){
+                $(this.el).find('.modal').modal('hide');
+        },
+		
+        showModal : function(){
+            $(this.el).find('.modal').modal('show');
+        }
+});
+
+// Vue de la collection de recadreurs d'image
 app.Views.ThumbnailCroppersView = Backbone.View.extend({
-        //el : $('#target-cropped-container'),
+    
         el : $('#cropped-body'),
+        
         initialize: function(){
                 this.template = _.template($("#container-cropped-template").html());
                 this._meta = {
@@ -20,7 +56,8 @@ app.Views.ThumbnailCroppersView = Backbone.View.extend({
                         currentModel : null,
                         countReturn : 0
 
-                };	
+                };
+                _.bindAll(this,"onCropSelect","applyJCrop", "generateImages");
         },
 
         meta: function(prop, value) {
@@ -31,96 +68,80 @@ app.Views.ThumbnailCroppersView = Backbone.View.extend({
                 }
         },
 
-        onCropSelect: function(e){
-                //_this.meta('currentModel').set('coord', e);
-                _this.meta('currentModel').set('coord',e);
-
-        },
-
         events : {
-
-                // Au clic sur le menu de thumnails on change la colonne de gauche de la popup
                 'click #nav-image-size a' : "changeTumbnail"
-},
-
-        changeTumbnail : function(e) {
-
-                destURL = $(e.target).attr('href').replace('#','');
-
-                _this.meta('currentModel', app.collections.ThumbnailCroppers.get(destURL));
-
-                currentCoord = _this.meta('currentModel').get('coord');
-                currentSize = _this.meta('currentModel').get('size');
-
-                _this.meta('jcropAPI').setOptions({aspectRatio: currentSize[0]/currentSize[1]});
-                _this.meta('jcropAPI').setSelect([currentCoord.x, currentCoord.y, currentCoord.x2, currentCoord.y2]);
-
-
-
-
-                destURL = $(e.target).attr('href').replace('#','');
-                $("#nav-image-size li").removeClass('active');
-                $(e.target).parent().addClass('active');
-                $("#cropped-container li").hide();
-                $("#cropped-container li#img-" + destURL).fadeIn(200);
-                e.preventDefault();
         },
 
+        // Affichage du module de thumbnail
         render : function() {
                 tmbnls = app.collections.ThumbnailCroppers.toJSON();
+                
                 var renderedContent = this.template({ thumbnails : tmbnls });
 
-                //$(this.el).html(renderedContent);
                 $(this.el).find("#nav-image-size").html(renderedContent);
 
                 $(this.el).find("#cropped-container").html("<img src='"+this.meta("imgURL")+"' id='target'/>");
-
-                _this = this;
-
-
-                app.collections.ThumbnailCroppers.each(function(model){
-
-                        var modelView = new app.Views.ThumbnailCropperView({model : model});
-
-                })
-
+               
                 this.meta('currentModel', app.collections.ThumbnailCroppers.models[0]);
 
+                setTimeout(this.applyJCrop,200);
 
-                setTimeout(function(){
-
-                jcrop = $(_this.el).find('#target').Jcrop({
+                return this;
+        },
+        
+        
+        // Applique le plugin jCrop au visuel principal apres 200ms
+        applyJCrop : function(){
+                var _this = this;
+                jcrop = $(this.el).find('#target').Jcrop({
 
                         bgOpacity: 0.3,
                         allowSelect: false,
                         bgColor: '#212121',
                         addClass: 'jcrop-light model-',
-                        aspectRatio: _this.meta('currentModel').get('size')[0] / _this.meta('currentModel').get('size')[1],
-                        setSelect:   [ _this.meta('currentModel').get('coord').x, _this.meta('currentModel').get('coord').y, _this.meta('currentModel').get('coord').x2, _this.meta('currentModel').get('coord').y2],
-                        trueSize: [_this.meta("imgSize")[0],_this.meta("imgSize")[1]],
+                        aspectRatio: this.meta('currentModel').get('size')[0] / this.meta('currentModel').get('size')[1],
+                        setSelect:   [ this.meta('currentModel').get('coord').x, this.meta('currentModel').get('coord').y, this.meta('currentModel').get('coord').x2, this.meta('currentModel').get('coord').y2],
+                        trueSize: [this.meta("imgSize")[0],this.meta("imgSize")[1]],
                         boxWidth: 500,
                         boxHeight: 400,
-                        onSelect: _this.onCropSelect
+                        onSelect: this.onCropSelect
 
 
                 },function(){
                         _this.meta('jcropAPI',this); 
                         $(this.ui.holder).css("margin-left", (500 - $(this.ui.holder).width()) / 2 + "px");
                         $(this.ui.holder).css("margin-top", (400 - $(this.ui.holder).height()) / 2 + "px");
-
                 });
 
 
-                },200,_this)
+        },
+        
+        // Chaque fois que la selection change on met a jour les coordonnees du model en cours
+        onCropSelect: function(e){
+            this.meta('currentModel').set('coord',e);
+        },
+        
+        // Applique un nouveau jCrop de la taille de la miniature voulue
+        changeTumbnail : function(e) {
 
+                destURL = $(e.target).attr('href').replace('#','');
+                this.meta('currentModel', app.collections.ThumbnailCroppers.get(destURL));
 
+                currentCoord = this.meta('currentModel').get('coord');
+                currentSize = this.meta('currentModel').get('size');
 
+                this.meta('jcropAPI').setOptions({aspectRatio: currentSize[0]/currentSize[1]});
+                this.meta('jcropAPI').setSelect([currentCoord.x, currentCoord.y, currentCoord.x2, currentCoord.y2]);
 
-
-
-                return this;
+                $("#nav-image-size li").removeClass('active');
+                $(e.target).parent().addClass('active');
+                e.preventDefault();
+                
         },
 
+        // Genere les miniatures des images en appelant crop.php
+        // TODO : rendre plus souple la sauvegarde dans les dossiers thumb et temp
+        // TODO : sortir cette methode de cette vue. Le traitement des images ne concerne pas le Crop
         generateImages : function(e) {
                 _this = this;
                 this.meta("countReturn", 0);
@@ -128,29 +149,29 @@ app.Views.ThumbnailCroppersView = Backbone.View.extend({
                 app.collections.ThumbnailCroppers.each(function(model){
                 coord = model.get("coord");
 
-                        $.ajax({
-                                type: "POST",
-                                url : "assets/js/crop.php",
-                                dataType:"json",
-                                data : {
-                                        x : coord.x, 
-                                        y : coord.y, 
-                                        h : coord.h, 
-                                        w: coord.w, 
-                                        tw: model.get('size')[0], 
-                                        th: model.get('size')[1], 
-                                        src: $('#target').attr('src'), 
-                                        name: 'img-generate_' + model.get('size')[0] + "x" + model.get('size')[1],
-                                        type: model.get('type')
-                                        },						
-                                success : _this.afterImagesGenerate
-
-                        })
+                    $.ajax({
+                        type: "POST",
+                        url : "assets/js/crop.php",
+                        dataType:"json",
+                        data : {
+                                x : coord.x, 
+                                y : coord.y, 
+                                h : coord.h, 
+                                w: coord.w, 
+                                tw: model.get('size')[0], 
+                                th: model.get('size')[1], 
+                                src: $('#target').attr('src'), 
+                                name: 'img-generate_' + model.get('size')[0] + "x" + model.get('size')[1],
+                                type: model.get('type')
+                                },						
+                        success : _this.afterImageGenerate
+                    })
                 });
 
-},
-
-        afterImagesGenerate : function(data){
+        },
+        
+        // Chaque fois qu'une miniature est generee on verifie si c'est la derniere de la liste
+        afterImageGenerate : function(data){
                 arr = _this.meta("arrayReturn");
                 arr.push(data);
                 _this.meta("countReturn", _this.meta("countReturn") + 1);
@@ -161,186 +182,136 @@ app.Views.ThumbnailCroppersView = Backbone.View.extend({
                         _this.trigger("afterImagesGenerate",arr, $('#target').attr('src'));
         }
 
-
 });
 
 
+
+
+
+
+/*
+ * LES VUES CONCERNANT L'AFFICHAGE DES IMAGES ET LEUR TRI
+ */
+
 // Vue de la Collection de Model Image
 app.Views.ImagesView = Backbone.View.extend({
-    el : $('#doc-container-template'),
     
-    initialize: function(){
-        this.template = _.template($("#docs-collection-template").html());
+        el : $('#doc-container-template'),
+    
+        initialize: function(){
+            this.template = _.template($("#docs-collection-template").html());
 
-        /*--- binding ---*/
-        _.bindAll(this, 'render');
-        this.collection.bind('change', this.render);
-        this.collection.bind('add', this.render);
-        this.collection.bind('remove', this.render);
-        /*---------------*/
-    
-    },
+            // A chaque modif/ajout/suppr de la collection Images on lance le render
+            _.bindAll(this, 'render');
+            this.collection.bind('change', this.render);
+            this.collection.bind('add', this.render);
+            this.collection.bind('remove', this.render);
+
+        },
 
         render : function() {
             
                 var renderedContent = this.template({ images : this.collection.toJSON()});
                 
-                
                 $(this.el).html(renderedContent);
+                
+                // Applique le plugin de drag&drop de jQueryUI
                 $(this.el).find('#doc-container').sortable({
                         revert:100,
                         stop: this.changeOrderArray
                 });
+                
                 return this;
         },
-
+        
+        // Methode lancee chaque fois que l'ordre des images est modifiee
         changeOrderArray : function(ev, ui){
                 arr = $(this).sortable('toArray', 'attr-id');
+                // Ne fait rien pour le moment
         }
 });
 
 
-// View du recadreur d'image
-	app.Views.ThumbnailCropperView = Backbone.View.extend({
-		el : $('#modals-container'),
-		
-		initialize : function() {
-			
 
-		},
-		
-		render : function(el){
-			
-			
-		
-		},
-		
-		updateCoords : function(obj,coord) {
-			//_this.model.set('coord', coord);
-			
-		}
-	
-	})
-	
-	window.ModalView = Backbone.View.extend({
-        el : $('#modals-container'),
-		
+    
 
+
+/*
+ * LES VUES CONCERNANT L'UPLOAD DES FICHIERS
+ */
+
+app.Views.UploaderView = Backbone.View.extend({
+        el : $(".formfileupload"),
+        
         initialize : function() {
-            //Nothing to do now
+         
+         _.bindAll(this);   
+            
+        },
+        
+        events : {
+                "change :file" : 'inputFileChange'
+        },
+        
+        // Lorsque le champ uploadfile est modifie
+        inputFileChange : function(){
+
+                var formData = new FormData($(this.el)[0]);
+
+                $.ajax({
+                        url: 'assets/js/upload.php',
+                        type: 'POST',
+                        dataType:"json",
+                        xhr: function() {
+                            myXhr = $.ajaxSettings.xhr();
+                            if(myXhr.upload){
+                                    myXhr.upload.addEventListener('progress',this.progressHandlingFunction, false);
+                            }
+                            return myXhr;
+                        },
+                        beforeSend: this.beforeSendHandler,
+                        success: this.completeHandler,
+                        data: formData,
+                        //Options to tell JQuery not to process data or worry about content-type
+                        cache: false,
+                        contentType: false,
+                        processData: false
+                });
 
         },
-		
-        events : {
-			//Au clic sur le bouton generate-image on déclenche l'event 'generateImages'
-            'click #generate-image' : function(){ 
-                this.trigger('generateImages'); 
-            }
+        
+        // Au lancement de l'upload
+        // Initialisation de la barre de progression
+        beforeSendHandler: function(){
+                $(this.el).find('.progress-upload').show().fadeIn();
+                $(this.el).find('.progress-upload .progress .bar').css({"width": "0%", "animation-duration":"0s"});
         },
-       
-		
-		closeModal : function(){
-			
-			$(this.el).find('.modal').modal('hide');
-					
-			
-		},
-		
-		showModal : function(){
-		
-			$(this.el).find('.modal').modal('show');
-		},
-		
-        error : function(model, error) {
-            console.log(model, error);
-            return this;
+
+        // A chaque donnees recues
+        // Mise a jour de la barre de progression
+        progressHandlingFunction: function (e){
+                percentage = Math.round(e.loaded / e.total * 100) + "%";
+                if(e.lengthComputable){
+                        $(this.el).find('.progress-upload .progress .bar').css("width", percentage);
+                        $(this.el).find('.progress-upload .percentage').html(percentage);
+                }
+        },
+        
+        // Quand l'upload est termine
+        completeHandler : function(data){
+                $(this.el).find('.progress-upload .progress .bar').css("width", "100%");
+                $(this.el).find('.progress-upload .text').html("<small>Fichier uploadé avec succès</small>");
+                $(this.el).find('.progress-upload .progress').removeClass('progress-striped');
+                $(this.el).find('.progress-upload .progress').addClass('progress-success');
+
+                var _this = this;
+                
+                setTimeout(function(){
+                        _this.trigger("endUpload",data);
+                        $(_this.el).find('.progress-upload').hide();
+                },2000)
+
         }
 
     });
-    
-    
-    app.Views.UploaderView = Backbone.View.extend({
-		el : $(".formfileupload"),
-		
-		events : {
-			"change :file" : function(e){
-				fileInput = e.target;
-				
-				var file = fileInput.files[0];
-				name = file.name;
-				size = file.size;
-				type = file.type;
-
-				this.launchUpload();
-			
-			}
-		},
-		
-		launchUpload : function(){
-		
-			var formData = new FormData($(this.el)[0]);
-                        _this = this;
-			
-			$.ajax({
-				url: 'assets/js/upload.php',  //server script to process data
-				type: 'POST',
-				dataType:"json",
-				xhr: function() {  // custom xhr
-				myXhr = $.ajaxSettings.xhr();
-				if(myXhr.upload){ // check if upload property exists
-					myXhr.upload.addEventListener('progress',_this.progressHandlingFunction, false); // for handling the progress of the upload
-				}
-				return myXhr;
-				},
-				//Ajax events
-				beforeSend: _this.beforeSendHandler,
-				success: _this.completeHandler,
-				//error: errorHandler,
-				// Form data
-				data: formData,
-				//Options to tell JQuery not to process data or worry about content-type
-				cache: false,
-				contentType: false,
-				processData: false
-			});
-		
-		},
-		
-		beforeSendHandler: function(){
-			$(_this.el).find('.progress-upload').show().fadeIn();
-			$(_this.el).find('.progress-upload .progress .bar').css({"width": "0%", "animation-duration":"0s"});
-		},
-		
-		progressHandlingFunction: function (e){
-		
-			percentage = Math.round(e.loaded / e.total * 100) + "%";
-			if(e.lengthComputable){
-				$(_this.el).find('.progress-upload .progress .bar').css("width", percentage);
-				$(_this.el).find('.progress-upload .percentage').html(percentage);
-			}
-		},
-
-		completeHandler : function(data){
-			
-			$(_this.el).find('.progress-upload .progress .bar').css("width", "100%");
-			$(_this.el).find('.progress-upload .text').html("<small>Fichier uploadé avec succès</small>");
-			$(_this.el).find('.progress-upload .progress').removeClass('progress-striped');
-			$(_this.el).find('.progress-upload .progress').addClass('progress-success');
-			
-			_this = _this;
-			setTimeout(function(){
-				_this.trigger("endUpload",data);
-				$(_this.el).find('.progress-upload').hide();
-			},2000)
-			
-		},
-		
-		render : function(){
-			
-	
-
-		
-		}
-	
-	});
         
