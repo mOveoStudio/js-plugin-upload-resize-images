@@ -20,6 +20,9 @@ app.Models.main = Backbone.Model.extend({
 
     initialize : function() {
 
+            // Initialisation de la vue principale
+            app.views.main = new app.Views.main({model:this, el:this.get('wrapper')});
+            
             // On créé la collection qui gérera les images du plugin
             app.collections.Images = new app.Collections.Images();
             
@@ -27,25 +30,21 @@ app.Models.main = Backbone.Model.extend({
             this.img2 = new app.Models.Image({id:"630", url:"assets/images/03.jpg", type:'main_thumb'});
 
             app.collections.Images.add([this.img1, this.img2]);
-            // Et le rendu de la collection d'images
             
-            app.views.ImagesView = new app.Views.ImagesView({collection : app.collections.Images});
-            app.views.ImagesView.render();
-
-            // On créé la popup modal
-            this.modalView = new app.Views.ModalView();
-            this.modalView.bind('generateImages', this.generateImages, this);
-
+            // Et le rendu de la collection d'images
+            app.views.imagesView = new app.Views.ImagesView({el : app.views.main.imagesModuleHTML, collection : app.collections.Images});
+            app.views.imagesView.render();
 
             // On créé la collection qui gérera les recadreurs d'images
-            app.collections.ThumbnailCroppers = new app.Collections.ThumbnailCroppers();
+            app.collections.thumbnailCroppers = new app.Collections.ThumbnailCroppers();
             
+            app.views.thumbnailcroppersView = new app.Views.ThumbnailCroppersView({el : app.views.main.thumbnailsModuleHTML, collection : app.collections.thumbnailCroppers});
             // Détection des évènements utilisateurs
             //var mainView = new MainView();
 
             // Manager de upload ficher
             app.models.uploader = new app.Models.Uploader();
-            app.views.uploaderView = new app.Views.UploaderView({model : this.images});
+            app.views.uploaderView = new app.Views.UploaderView({el : app.views.main.uploadModuleHTML, model : this.images});
             app.views.uploaderView.bind('endUpload', this.generateImageCropper, this);
 
 
@@ -71,14 +70,13 @@ app.Models.main = Backbone.Model.extend({
             _.each(this.get("thumbs"), function(e){
 
                     thumbnailCropper = new app.Models.ThumbnailCropper({size: [e.h,e.w], img_size:imgsize, type:e.type});
-                    app.collections.ThumbnailCroppers.add(thumbnailCropper);
+                    app.collections.thumbnailCroppers.add(thumbnailCropper);
 
             },this)
 
 
 
             // Et le rendu de la collection de recadreur
-            app.views.thumbnailcroppersView = new app.Views.ThumbnailCroppersView({ collection : app.collections.Thumbnailcroppers});
             app.views.thumbnailcroppersView.meta("imgURL", this.get('url_images') + "temp/" + imgname);
             app.views.thumbnailcroppersView.meta("imgSize", [imgsize[0], imgsize[1]]);
             app.views.thumbnailcroppersView.render();
@@ -111,7 +109,6 @@ app.Models.main = Backbone.Model.extend({
                     app.collections.Images.add(image);
             }, this)
 
-
             //Suppression du fichier temp
             $.ajax({
                     url: 'assets/js/delete.php',
@@ -119,7 +116,6 @@ app.Models.main = Backbone.Model.extend({
                     data: { url : temp }
             });
 
-            this.modalView.closeModal();
     }
 
 })

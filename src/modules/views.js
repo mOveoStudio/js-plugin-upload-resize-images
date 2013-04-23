@@ -10,7 +10,18 @@
  * VUE PRINCIPALE DE L'APPLI
  */
 app.Views.main = Backbone.View.extend({
-
+    
+    initialize: function(){  
+        
+        this.thumbnailsModuleHTML = $(app.JST['template/thumbnailsModule']());
+        this.uploadModuleHTML = $(app.JST['template/uploaderModule']());
+        this.imagesModuleHTML = $("<div id='image-container-body' class='span12'/>");
+        
+        // On ajoute les div a l'element principal #wrapper
+        $(this.el).append(this.uploadModuleHTML);
+        $(this.el).append(this.imagesModuleHTML);
+        $(this.el).append(this.thumbnailsModuleHTML);
+    }
     
 });
 
@@ -23,34 +34,14 @@ app.Views.main = Backbone.View.extend({
  */
 
 
-// Vue de la fenetre modal
-// TODO : Supprimer et remplacer
-app.Views.ModalView = Backbone.View.extend({
-        el : $('#modals-container'),
-		
-        events : {
-            //Au clic sur le bouton generate-image on déclenche l'event 'generateImages'
-            'click #generate-image' : function(){ 
-                this.trigger('generateImages'); 
-            }
-        },
-		
-        closeModal : function(){
-                $(this.el).find('.modal').modal('hide');
-        },
-		
-        showModal : function(){
-            $(this.el).find('.modal').modal('show');
-        }
-});
-
 // Vue de la collection de recadreurs d'image
 app.Views.ThumbnailCroppersView = Backbone.View.extend({
-    
-        el : $('#cropped-body'),
         
         initialize: function(){
-                this.template = _.template($("#container-cropped-template").html());
+
+                this.templateThumbnailsList = app.JST['template/thumbnailsList'];
+                this.templateCropZone = app.JST['template/thumbnailCropZone'];
+
                 this._meta = {
 
                         currentModel : null,
@@ -69,24 +60,33 @@ app.Views.ThumbnailCroppersView = Backbone.View.extend({
         },
 
         events : {
-                'click #nav-image-size a' : "changeTumbnail"
+                'click #nav-image-size a' : "changeTumbnail",
+                'click #generate-image' : "generateImages"
         },
 
         // Affichage du module de thumbnail
         render : function() {
-                tmbnls = app.collections.ThumbnailCroppers.toJSON();
+                tmbnls = app.collections.thumbnailCroppers.toJSON();
                 
-                var renderedContent = this.template({ thumbnails : tmbnls });
+                var renderedContent = this.templateThumbnailsList({ thumbnails : tmbnls });
 
                 $(this.el).find("#nav-image-size").html(renderedContent);
 
-                $(this.el).find("#cropped-container").html("<img src='"+this.meta("imgURL")+"' id='target'/>");
+                $(this.el).find("#cropped-container").html(this.templateCropZone({url : this.meta("imgURL")}));
                
-                this.meta('currentModel', app.collections.ThumbnailCroppers.models[0]);
+                this.meta('currentModel', app.collections.thumbnailCroppers.models[0]);
 
                 setTimeout(this.applyJCrop,200);
 
                 return this;
+        },
+        
+        clean: function(){
+            
+            this.collection.reset();
+            $(this.el).find("#nav-image-size").html("");
+            $(this.el).find("#cropped-container").html("");
+            
         },
         
         
@@ -125,7 +125,7 @@ app.Views.ThumbnailCroppersView = Backbone.View.extend({
         changeTumbnail : function(e) {
 
                 destURL = $(e.target).attr('href').replace('#','');
-                this.meta('currentModel', app.collections.ThumbnailCroppers.get(destURL));
+                this.meta('currentModel', app.collections.thumbnailCroppers.get(destURL));
 
                 currentCoord = this.meta('currentModel').get('coord');
                 currentSize = this.meta('currentModel').get('size');
@@ -143,10 +143,11 @@ app.Views.ThumbnailCroppersView = Backbone.View.extend({
         // TODO : rendre plus souple la sauvegarde dans les dossiers thumb et temp
         // TODO : sortir cette methode de cette vue. Le traitement des images ne concerne pas le Crop
         generateImages : function(e) {
+            
                 _this = this;
                 this.meta("countReturn", 0);
                 this.meta("arrayReturn", []);
-                app.collections.ThumbnailCroppers.each(function(model){
+                app.collections.thumbnailCroppers.each(function(model){
                 coord = model.get("coord");
 
                     $.ajax({
@@ -178,8 +179,10 @@ app.Views.ThumbnailCroppersView = Backbone.View.extend({
 
                 // Si le nb de miniatures générées est égal au nombre de model présent dans la collection
                 // On lance le trigger de fin
-                if(_this.meta("countReturn") >= app.collections.ThumbnailCroppers.length)
+                if(_this.meta("countReturn") >= app.collections.thumbnailCroppers.length){
                         _this.trigger("afterImagesGenerate",arr, $('#target').attr('src'));
+                        app.views.thumbnailcroppersView.clean();
+                }
         }
 
 });
@@ -195,17 +198,18 @@ app.Views.ThumbnailCroppersView = Backbone.View.extend({
 
 // Vue de la Collection de Model Image
 app.Views.ImagesView = Backbone.View.extend({
-    
-        el : $('#doc-container-template'),
-    
+        el : $(),
         initialize: function(){
-            this.template = _.template($("#docs-collection-template").html());
+            
+                this.el = app.views.main.imagesModuleHTML;
 
-            // A chaque modif/ajout/suppr de la collection Images on lance le render
-            _.bindAll(this, 'render');
-            this.collection.bind('change', this.render);
-            this.collection.bind('add', this.render);
-            this.collection.bind('remove', this.render);
+                this.template = app.JST['template/imagesCollection'];
+
+                // A chaque modif/ajout/suppr de la collection Images on lance le render
+                _.bindAll(this, 'render');
+                this.collection.bind('change', this.render);
+                this.collection.bind('add', this.render);
+                this.collection.bind('remove', this.render);
 
         },
 
@@ -215,8 +219,8 @@ app.Views.ImagesView = Backbone.View.extend({
                 
                 $(this.el).html(renderedContent);
                 
-                // Applique le plugin de drag&drop de jQueryUI
-                $(this.el).find('#doc-container').sortable({
+                // Applique le plugin de Drag&Drop de jQueryUI
+                $(this.el).find('#images-container').sortable({
                         revert:100,
                         stop: this.changeOrderArray
                 });
@@ -241,7 +245,6 @@ app.Views.ImagesView = Backbone.View.extend({
  */
 
 app.Views.UploaderView = Backbone.View.extend({
-        el : $(".formfileupload"),
         
         initialize : function() {
          
@@ -256,7 +259,7 @@ app.Views.UploaderView = Backbone.View.extend({
         // Lorsque le champ uploadfile est modifie
         inputFileChange : function(){
 
-                var formData = new FormData($(this.el)[0]);
+                var formData = new FormData($(this.el).find(".formfileupload")[0]);
 
                 $.ajax({
                         url: 'assets/js/upload.php',

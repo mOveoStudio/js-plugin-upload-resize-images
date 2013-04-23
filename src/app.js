@@ -27,16 +27,19 @@ var app = {
   Collections: {},
   Models: {},
   Views: {},
+  Templates: {},
   
   // Les instances
   collections: {},
   models: {},
   views: {},
+  templates: {},
   
   init: function () {
-  
+      
     //Initialisation du model principal
     app.models.main = new app.Models.main({
+            "wrapper" : $("#thumnails-manager-js"),
             "url_images" : "assets/",
             "thumbs" : [{
                             h : "200",
@@ -56,6 +59,7 @@ var app = {
 
             ]
     });
+    
   }
 };
 
