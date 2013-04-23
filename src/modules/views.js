@@ -15,7 +15,7 @@ app.Views.main = Backbone.View.extend({
         
         this.thumbnailsModuleHTML = $(app.JST['template/thumbnailsModule']());
         this.uploadModuleHTML = $(app.JST['template/uploaderModule']());
-        this.imagesModuleHTML = $("<div id='image-container-body' class='span12'/>");
+        this.imagesModuleHTML = $("<div id='moduleSortImages' class='span12'/>");
         
         // On ajoute les div a l'element principal #wrapper
         $(this.el).append(this.uploadModuleHTML);

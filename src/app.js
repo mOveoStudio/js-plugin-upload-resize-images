@@ -39,7 +39,7 @@ var app = {
       
     //Initialisation du model principal
     app.models.main = new app.Models.main({
-            "wrapper" : $("#thumnails-manager-js"),
+            "wrapper" : $("#thumbnailsManagerJS"),
             "url_images" : "assets/",
             "thumbs" : [{
                             h : "200",

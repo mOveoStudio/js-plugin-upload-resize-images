@@ -1,8 +1,9 @@
 
 app.JST = {};
 
+// Template module Thumbnail
 app.JST['template/thumbnailsModule'] = _.template(
-        '<div id="modals-container">\
+        '<div id="moduleThumbnail">\
 		<!--<div id="myModal" class="modal hide fade bigModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->\
 		<div>\
                 <div class="modal-header">\
@@ -56,7 +57,7 @@ app.JST['template/imagesCollection'] = _.template(
 
 // Template module Upload
 app.JST['template/uploaderModule'] = _.template(
-'<div class="span12" id="upload-part">\
+'<div id="moduleUpload" class="span12">\
                         <form enctype="multipart/form-data" class="formfileupload">\
                                 <div class="row">\
                                 <div class="span3">\
