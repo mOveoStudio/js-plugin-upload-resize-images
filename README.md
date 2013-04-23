@@ -10,5 +10,5 @@ Plugin développé avec Backbone pour gérer les miniatures des images uploadée
 - Réduire les dépendances au nombreux plugin JS et integrer les plugins indipensables directement dans l'appli (requireJS ?)
 - Ajouter des methodes evenements lors des actions suivantes : onThumbnailsCreate, onImagesSort,...
 - Supprimer la dépendance au bootstrap de Twitter
-- Rendre compatible avec IE9 la partie upload
+- Rendre compatible avec IE la partie upload
 - ... 
