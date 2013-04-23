@@ -5,7 +5,7 @@ Plugin développé avec Backbone pour gérer les miniatures des images uploadée
 
 @TODO
 - Séparer le code en 3 modules distincts : UploadManager, ThumbnailManager, SortImageManager
-- <del>Utiliser les JST templates pour eviter de dependre d'un html principal</del>
+- <del>Utiliser les JST templates pour eviter de dependre d'un html principal</del> (23/04/2013)
 - A l'initialisation du plugin creer les $el qui accueilleront les 3 modules : #images-sort-list, #upload, #thumbnailGenerator
 - Réduire les dépendances au nombreux plugin JS et integrer les plugins indipensables directement dans l'appli (requireJS ?)
 - Ajouter des methodes evenements lors des actions suivantes : onThumbnailsCreate, onImagesSort,...
