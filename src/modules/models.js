@@ -5,6 +5,9 @@
  */
 
 
+/*
+ * MODELE PRINICIPAL DE L'APPLI
+ */
 // Modèle prinicipal. Il gère les instanciations des différents éléments de l'app
 // et écoute les trigger des autres modèles
 app.Models.main = Backbone.Model.extend({
@@ -51,7 +54,8 @@ app.Models.main = Backbone.Model.extend({
 
     },
 
-    // Genere
+    // Creation de la collections de recadreur
+    // TODO : Faire fonctionner ce code avec la collection Images ?
     generateImageCropper : function (d){
 
 
@@ -84,40 +88,47 @@ app.Models.main = Backbone.Model.extend({
             //this.modalView.showModal();
             //this.thumbnailGeneratorView = new ThumbnailCropperView({ model : this.thumbnailCropper1 });
 
-
-
     },
 
-        begincrop : function (){
-                console.log("Ca commence à Crop !!!");
-        },
+    begincrop : function (){
+            console.log("Ca commence à Crop !!!");
+    },
+    
+    // On delegue a la vue de la collection des recadreur la generation des miniatures
+    // TODO : A rapatriller ici
+    generateImages : function(){
 
-        generateImages : function(){
+            app.views.thumbnailcroppersView.generateImages();
 
-                app.views.thumbnailcroppersView.generateImages();
+    },
+    
+    // On supprime l'image temporaire qu'on a utiliser pour les miniatures
+    // Et on ajoute la nouvelle Image a la collection Images
+    afterGenerateImage: function(arr, temp){
 
-        },
-
-        afterGenerateImage: function(arr, temp){
-
-                _.each(arr, function(e){
-                        var image =  new app.Models.Image({id:e.id, url:e.url, type:e.type, name: e.name});
-                        app.collections.Images.add(image);
-                }, this)
+            _.each(arr, function(e){
+                    var image =  new app.Models.Image({id:e.id, url:e.url, type:e.type, name: e.name});
+                    app.collections.Images.add(image);
+            }, this)
 
 
-                //Suppression du fichier temp
-                $.ajax({
-                        url: 'assets/js/delete.php',  //server script to process data
-                        type: 'POST',
-                        data: { url : temp }
-                });
+            //Suppression du fichier temp
+            $.ajax({
+                    url: 'assets/js/delete.php',
+                    type: 'POST',
+                    data: { url : temp }
+            });
 
-                this.modalView.closeModal();
-        }
+            this.modalView.closeModal();
+    }
 
 })
 	
+
+
+/*
+ * LES MODELES/COLLECTIONS CONCERNANT LA GESTION DES IMAGES
+ */
 
 // Declaration du model Image
 app.Models.Image = Backbone.Model.extend({
@@ -129,18 +140,19 @@ app.Models.Image = Backbone.Model.extend({
     }
 });
 
-// Declaration de la collection de cropper
-app.Collections.ThumbnailCroppers = Backbone.Collection.extend({
-            //model: app.Models.ThumbnailCropper
-    
-});
-
 
 // Declaration de la collection de content
 app.Collections.Images = Backbone.Collection.extend({
             model: app.Models.Image
             //localStorage : new Store("mvo_images"),
 });
+
+
+
+
+/*
+ * LES MODELES/COLLECTIONS CONCERNANT LE CROP DE MINIATURES
+ */
 
 // Model ThumbnailCropper
 // @param id : doit être unique
@@ -200,6 +212,17 @@ app.Models.ThumbnailCropper = Backbone.Model.extend({
 
 })
 
+// Declaration de la collection de cropper
+app.Collections.ThumbnailCroppers = Backbone.Collection.extend({
+            //model: app.Models.ThumbnailCropper
+    
+});
 
+
+
+
+/*
+ * LES MODELES/COLLECTIONS CONCERNANT L'UPLOAD DES FICHIERS IMAGES
+ */
 // Modele fichier upload
 app.Models.Uploader = Backbone.Model.extend({})
