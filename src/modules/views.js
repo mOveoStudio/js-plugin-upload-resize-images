@@ -148,6 +148,9 @@ app.Views.main = Backbone.View.extend({
                             type: 'POST',
                             data: { url : app.views.thumbnailcroppersView.urlImage }
                     });
+                    
+                    // On vide le template de recadrage
+                    app.views.thumbnailcroppersView.clean();
                 }
         },
         
