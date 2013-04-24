@@ -4,7 +4,12 @@
  *
  */
 
-
+define([
+  'jquery',
+  'underscore',
+  'backbone',
+  'src/app.js'
+], function($, _, Backbone, app){
 /*
  * MODELE PRINICIPAL DE L'APPLI
  */
@@ -222,3 +227,8 @@ app.Collections.ThumbnailCroppers = Backbone.Collection.extend({
  */
 // Modele fichier upload
 app.Models.Uploader = Backbone.Model.extend({})
+
+return {
+   mainModel : app.Models.main
+}
+})
