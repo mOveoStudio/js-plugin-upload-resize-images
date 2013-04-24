@@ -8,114 +8,19 @@
 /*
  * MODELE PRINICIPAL DE L'APPLI
  */
-// Modèle prinicipal. Il gère les instanciations des différents éléments de l'app
-// et écoute les trigger des autres modèles
+// Modèle prinicipal.
+// Instancie la vue principale et lance le rendu
 app.Models.main = Backbone.Model.extend({
 
     defaults:{
             url_images: "/",
+            wrapper : $(),
             thumbs : null
     },
-
-
-    initialize : function() {
-
-            // Initialisation de la vue principale
-            app.views.main = new app.Views.main({model:this, el:this.get('wrapper')});
-            
-            // On créé la collection qui gérera les images du plugin
-            app.collections.Images = new app.Collections.Images();
-            
-            this.img1 = new app.Models.Image({id:"250", url:"assets/images/01.jpg", type:'main_thumb'});
-            this.img2 = new app.Models.Image({id:"630", url:"assets/images/03.jpg", type:'main_thumb'});
-
-            app.collections.Images.add([this.img1, this.img2]);
-            
-            // Et le rendu de la collection d'images
-            app.views.imagesView = new app.Views.ImagesView({el : app.views.main.imagesModuleHTML, collection : app.collections.Images});
-            app.views.imagesView.render();
-
-            // On créé la collection qui gérera les recadreurs d'images
-            app.collections.thumbnailCroppers = new app.Collections.ThumbnailCroppers();
-            
-            app.views.thumbnailcroppersView = new app.Views.ThumbnailCroppersView({el : app.views.main.thumbnailsModuleHTML, collection : app.collections.thumbnailCroppers});
-            // Détection des évènements utilisateurs
-            //var mainView = new MainView();
-
-            // Manager de upload ficher
-            app.models.uploader = new app.Models.Uploader();
-            app.views.uploaderView = new app.Views.UploaderView({el : app.views.main.uploadModuleHTML, model : this.images});
-            app.views.uploaderView.bind('endUpload', this.generateImageCropper, this);
-
-
-            // On génére une popup avec les différents formats d'images pour les miniatures
-            //this.generateImageCropper();
-
-    },
-
-    // Creation de la collections de recadreur
-    // TODO : Faire fonctionner ce code avec la collection Images ?
-    generateImageCropper : function (d){
-
-
-            $('body').find(".progress-upload").hide();
-
-
-            imgname = d.filename;
-            imgsize = d.imagesize;
-            
-
-            if(this.get("thumbs") == null) return;
-
-            _.each(this.get("thumbs"), function(e){
-
-                    thumbnailCropper = new app.Models.ThumbnailCropper({size: [e.h,e.w], img_size:imgsize, type:e.type});
-                    app.collections.thumbnailCroppers.add(thumbnailCropper);
-
-            },this)
-
-
-
-            // Et le rendu de la collection de recadreur
-            app.views.thumbnailcroppersView.meta("imgURL", this.get('url_images') + "temp/" + imgname);
-            app.views.thumbnailcroppersView.meta("imgSize", [imgsize[0], imgsize[1]]);
-            app.views.thumbnailcroppersView.render();
-
-            app.views.thumbnailcroppersView.bind('afterImagesGenerate', this.afterGenerateImage, this);
-
-            //this.modalView.showModal();
-            //this.thumbnailGeneratorView = new ThumbnailCropperView({ model : this.thumbnailCropper1 });
-
-    },
-
-    begincrop : function (){
-            console.log("Ca commence à Crop !!!");
-    },
     
-    // On delegue a la vue de la collection des recadreur la generation des miniatures
-    // TODO : A rapatriller ici
-    generateImages : function(){
-
-            app.views.thumbnailcroppersView.generateImages();
-
-    },
-    
-    // On supprime l'image temporaire qu'on a utiliser pour les miniatures
-    // Et on ajoute la nouvelle Image a la collection Images
-    afterGenerateImage: function(arr, temp){
-
-            _.each(arr, function(e){
-                    var image =  new app.Models.Image({id:e.id, url:e.url, type:e.type, name: e.name});
-                    app.collections.Images.add(image);
-            }, this)
-
-            //Suppression du fichier temp
-            $.ajax({
-                    url: 'assets/js/delete.php',
-                    type: 'POST',
-                    data: { url : temp }
-            });
-
+    initialize:function(){
+        app.views.main = new app.Views.main({model:this});
+        app.views.main.render();
     }
 
 })
