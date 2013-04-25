@@ -1,5 +1,0 @@
-/*
- *
- * LES VUES DE L'APPLICATION
- *
- */
