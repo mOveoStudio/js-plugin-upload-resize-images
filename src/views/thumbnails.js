@@ -6,7 +6,7 @@ define([
   'underscore',
   'backbone',
   'jquery',
-  'templates/templates',
+  'src/templates/templates',
   'jcrop'
 ], function(_, Backbone, $, JST) {
         // Vue de la collection de recadreurs d'image

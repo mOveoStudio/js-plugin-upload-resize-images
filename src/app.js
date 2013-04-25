@@ -23,7 +23,7 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'models/main'
+  'src/models/main'
 ], function($, _, Backbone, Main){
     
   

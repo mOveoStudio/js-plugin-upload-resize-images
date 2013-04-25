@@ -6,7 +6,7 @@
 define([
   'underscore',
   'backbone',
-  'views/main'
+  'src/views/main'
 ], function(_, Backbone, mainView) {
     
     var Main = Backbone.Model.extend({

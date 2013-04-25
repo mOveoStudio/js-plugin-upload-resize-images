@@ -163,3 +163,101 @@
 img.jcrop-preview {
   max-width: none;
 }
+
+.ui-sortable-placeholder{
+	background:#f5f5f5;
+	border:none;
+	visibility:visible !important;
+	height:152px;
+	box-sizing:border-box;
+	-moz-box-sizing:border-box; /* Firefox */
+	-webkit-box-sizing:border-box; /* Safari */
+	border:dashed 2px #D8D8D8;
+}
+
+
+.ui-sortable > li:hover{
+	cursor:move;
+}
+
+.ui-sortable-helper{
+	opacity:0.8;
+}
+
+.bigModal{
+   width:800px;
+   margin-left:-400px;
+}
+
+.jcrop-light .jcrop-handle{
+	background-color:#0088CC;
+	border-radius: 0;
+}
+
+
+.modal-body {
+	/*max-height:none;*/
+}
+
+.modal-body #cropped-container{
+	list-style:none;
+	margin:0;
+	padding:0;
+	background:url(../images/bg_cropzone.jpg);
+	border:1px solid #c1c1c1;
+	box-sizing:border-box;
+	-moz-box-sizing:border-box; /* Firefox */
+	-webkit-box-sizing:border-box; /* Safari */
+	height:400px;
+	width:500px;
+	overflow:hidden;
+}
+
+.modal-body  .jcrop-holder {
+    box-shadow: 0 0 11px -3px #404040;
+}
+
+.modal-body #cropped-container li{
+	display:none;
+	/*border:1px solid #eee;
+	padding:3;*/
+}
+
+.modal-body #cropped-container li:first-child{
+	display:block;
+}
+
+form.formfileupload input[type="button"]{
+	display:none;
+}
+
+form.formfileupload  .progress-upload{
+	padding:5px;
+	background:#f5f5f5;
+	/*border:solid 1px #D8D8D8;*/
+	border-radius:4px;
+	line-height:0;
+	display:none;
+	
+}
+form.formfileupload  .progress-upload:after{
+	content: "";
+    display: table;
+    line-height: 0;
+	clear:both;
+}
+
+form.formfileupload .progress{
+	margin-bottom:0;
+	width:350px;
+	float:left;
+	height:15px;
+}
+
+form.formfileupload  .progress-upload .text{
+	width:250px;
+	float:left;
+	margin: 0 0 0 15px;
+	color:#8B8B8B;
+	line-height:15px;
+}

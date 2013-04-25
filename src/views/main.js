@@ -5,13 +5,13 @@
 define([
   'underscore',
   'backbone',
-  'templates/templates',
-  'models/images',
-  'views/images',
-  'models/thumbnails',
-  'views/thumbnails',
-  'models/upload',
-  'views/upload'
+  'src/templates/templates',
+  'src/models/images',
+  'src/views/images',
+  'src/models/thumbnails',
+  'src/views/thumbnails',
+  'src/models/upload',
+  'src/views/upload'
 ], function(_, Backbone, JST, Images, ImagesView, Thumbnails, ThumbnailsView, Upload, UploadView) {
     main = Backbone.View.extend({
     

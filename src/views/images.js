@@ -5,7 +5,7 @@ define([
   'underscore',
   'backbone',
   'jquery',
-  'templates/templates',
+  'src/templates/templates',
   'jqueryUI'
 ], function(_, Backbone, $, JST) {
     
