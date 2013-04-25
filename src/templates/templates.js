@@ -1,8 +1,10 @@
-
-app.JST = {};
+define([
+    'underscore'
+], function(_) {
+JST = {};
 
 // Template module Thumbnail
-app.JST['template/thumbnailsModule'] = _.template(
+JST['template/thumbnailsModule'] = _.template(
         '<div id="moduleThumbnail">\
 		<!--<div id="myModal" class="modal hide fade bigModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->\
 		<div>\
@@ -31,21 +33,21 @@ app.JST['template/thumbnailsModule'] = _.template(
 );
 
 // Template liste des thumbnails
-app.JST['template/thumbnailsList'] = _.template(
+JST['template/thumbnailsList'] = _.template(
         '<% $id = 0 %>\
-        <% _.each(thumbnails, function(img) { %>\
-        <li <%if($id==0) {%>class="active"<%} %>><a href="#<%= img.id %>"><%= img.size[0] %> x <%= img.size[1] %></a></li>\
+        <% _.each(thumbnails, function(soupiere) { %>\
+        <li <%if($id==0) {%>class="active"<%} %>><a href="#<%= soupiere.id %>"><%= soupiere.size[0] %> x <%= soupiere.size[1] %></a></li>\
         <% $id ++;%>\
         <% }); %>'
 );
 
 // Template zone de crop
-app.JST['template/thumbnailCropZone'] = _.template(
+JST['template/thumbnailCropZone'] = _.template(
     '<img src="<%= url %>" id="target">'
 );
 
 // Template liste des images pour tri
-app.JST['template/imagesCollection'] = _.template(
+JST['template/imagesCollection'] = _.template(
 '<ul id="images-container" class="thumbnails">\
     <% _.each(images, function(doc) { %>\
           <%if (doc.type == "main_thumb") {%>\
@@ -56,7 +58,7 @@ app.JST['template/imagesCollection'] = _.template(
 );
 
 // Template module Upload
-app.JST['template/uploaderModule'] = _.template(
+JST['template/uploaderModule'] = _.template(
 '<div id="moduleUpload" class="span12">\
                         <form enctype="multipart/form-data" class="formfileupload">\
                                 <div class="row">\
@@ -82,3 +84,5 @@ app.JST['template/uploaderModule'] = _.template(
     
 )
 
+return JST;
+});

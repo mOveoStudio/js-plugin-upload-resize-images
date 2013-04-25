@@ -1,16 +1,22 @@
 /*
  * LES VUES CONCERNANT L'AFFICHAGE DES IMAGES ET LEUR TRI
  */
+define([
+  'underscore',
+  'backbone',
+  'jquery',
+  'templates/templates',
+  'jqueryUI'
+], function(_, Backbone, $, JST) {
+    
 
 // Vue de la Collection de Model Image
-app.Views.ImagesView = Backbone.View.extend({
+ImagesView = Backbone.View.extend({
         el : $(),
         initialize: function(){
-            
-                this.el = app.views.main.imagesModuleHTML;
 
-                this.template = app.JST['template/imagesCollection'];
-
+                this.template = JST['template/imagesCollection'];
+                
                 // A chaque modif/ajout/suppr de la collection Images on lance le render
                 _.bindAll(this, 'render', 'changeOrderArray');
                 this.collection.bind('change', this.render);
@@ -40,4 +46,7 @@ app.Views.ImagesView = Backbone.View.extend({
                 arr = $(this.el).find('#images-container').sortable('toArray', 'attr-id');
                 this.trigger("sortImages", arr);
         }
+});
+
+return ImagesView;
 });

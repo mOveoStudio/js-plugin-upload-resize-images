@@ -1,22 +1,33 @@
-/*
- * VUE PRINCIPALE DE L'APPLI
- */
-app.Views.main = Backbone.View.extend({
+    /*
+     * VUE PRINCIPALE DE L'APPLI
+     */
+    
+define([
+  'underscore',
+  'backbone',
+  'templates/templates',
+  'models/images',
+  'views/images',
+  'models/thumbnails',
+  'views/thumbnails',
+  'models/upload',
+  'views/upload'
+], function(_, Backbone, JST, Images, ImagesView, Thumbnails, ThumbnailsView, Upload, UploadView) {
+    main = Backbone.View.extend({
     
         el : $(),
         countCroppedImage : 0,
 
         initialize : function(){
             this.el = this.model.get('wrapper');
-
             _.bindAll(this,'generateImages','afterImageGenerate');
         },
 
         render: function(){
 
                 //Initialisation des views des elements de l'appli
-                this.thumbnailsModuleHTML = $(app.JST['template/thumbnailsModule']());
-                this.uploadModuleHTML = $(app.JST['template/uploaderModule']());
+                this.thumbnailsModuleHTML = $(JST['template/thumbnailsModule']());
+                this.uploadModuleHTML = $(JST['template/uploaderModule']());
                 this.imagesModuleHTML = $("<div id='moduleSortImages' class='span12'/>");
 
                 // On ajoute les div a l'element principal #wrapper
@@ -25,34 +36,34 @@ app.Views.main = Backbone.View.extend({
                 $(this.el).append(this.thumbnailsModuleHTML);
 
                  // On créé la collection qui gérera les images du plugin
-                app.collections.Images = new app.Collections.Images();
+                imagesCollection = new Images.imagesCollection();
 
-                this.img1 = new app.Models.Image({id:"250", url:"assets/images/01.jpg", type:'main_thumb'});
-                this.img2 = new app.Models.Image({id:"630", url:"assets/images/03.jpg", type:'main_thumb'});
+                this.img1 = new Images.imageModel({id:"250", url:"assets/images/01.jpg", type:'main_thumb'});
+                this.img2 = new Images.imageModel({id:"630", url:"assets/images/03.jpg", type:'main_thumb'});
 
-                app.collections.Images.add([this.img1, this.img2]);
+                imagesCollection.add([this.img1, this.img2]);
 
                 // Et le rendu de la collection d'images
-                app.views.imagesView = new app.Views.ImagesView({el : this.imagesModuleHTML, collection : app.collections.Images});
-                app.views.imagesView.render();
+                imagesView = new ImagesView({el : this.imagesModuleHTML, collection : imagesCollection});
+                imagesView.render();
 
                 // On créé la collection qui gérera les recadreurs d'images
-                app.collections.thumbnailCroppers = new app.Collections.ThumbnailCroppers();
+                thumbnailCroppers = new Thumbnails.thumbnailsCollection();
 
                 // Creation de la vue de la collection de recadreurs
-                app.views.thumbnailcroppersView = new app.Views.ThumbnailCroppersView({el : this.thumbnailsModuleHTML, collection : app.collections.thumbnailCroppers});
+                thumbnailCroppersView = new ThumbnailsView({el : this.thumbnailsModuleHTML, collection : thumbnailCroppers});
 
                 // Manager de upload ficher
-                app.models.uploader = new app.Models.Uploader();
-                app.views.uploaderView = new app.Views.UploaderView({el : this.uploadModuleHTML, model : this.images});
+                uploader = new Upload();
+                uploaderView = new UploadView({el : this.uploadModuleHTML, model : this.images});
                 
                 // Listener des evenements provenant des 3 modules
                 // Listener fin de l'upload de l'image
-                app.views.uploaderView.bind('endUpload', this.generateImageCropper, this);
+                uploaderView.bind('endUpload', this.generateImageCropper, this);
                 // Listener fin des recadrage des images pour miniatures
-                app.views.thumbnailcroppersView.bind('endThumbnailsSelection', this.generateImages);
+                thumbnailCroppersView.bind('endThumbnailsSelection', this.generateImages);
                 // Listener changement ordre des images
-                app.views.imagesView.bind('sortImages', this.sortImages);
+                imagesView.bind('sortImages', this.sortImages);
         },
 
         // Creation de la collections de recadreur
@@ -70,9 +81,8 @@ app.Views.main = Backbone.View.extend({
                 if(this.model.get("thumbs") == null) return;
 
                 _.each(this.model.get("thumbs"), function(e){
-
-                        thumbnailCropper = new app.Models.ThumbnailCropper({size: [e.h,e.w], img_size:imgsize, type:e.type});
-                        app.collections.thumbnailCroppers.add(thumbnailCropper);
+                        thumbnailCropper = new Thumbnails.thumbnailModel({size: [e.h,e.w], img_size:imgsize, type:e.type});
+                        thumbnailCroppers.add(thumbnailCropper);
 
                 },this)
 
@@ -80,11 +90,11 @@ app.Views.main = Backbone.View.extend({
 
                 // Et le rendu de la collection de recadreur
                 // TODO : Ne plus utliser les metas.. pas necessaires dans une vue
-                app.views.thumbnailcroppersView.meta("imgURL", this.model.get('url_images') + "temp/" + imgname);
-                app.views.thumbnailcroppersView.meta("imgSize", [imgsize[0], imgsize[1]]);
+                thumbnailCroppersView.meta("imgURL", this.model.get('url_images') + "temp/" + imgname);
+                thumbnailCroppersView.meta("imgSize", [imgsize[0], imgsize[1]]);
 
-                app.views.thumbnailcroppersView.render();
-                app.views.thumbnailcroppersView.delegateEvents();
+                thumbnailCroppersView.render();
+                thumbnailCroppersView.delegateEvents();
 
 
         },
@@ -99,7 +109,7 @@ app.Views.main = Backbone.View.extend({
                 this.countCroppedImage = 0;
 
                 // Recadrage de chacune des miniatures 
-                app.collections.thumbnailCroppers.each(function(model){
+                thumbnailCroppers.each(function(model){
                 coord = model.get("coord");
 
                     $.ajax({
@@ -129,20 +139,20 @@ app.Views.main = Backbone.View.extend({
         afterImageGenerate : function(data){
                 
                 var e = data;
-                var image =  new app.Models.Image({id:e.id, url:e.url, type:e.type, name: e.name});
-                app.collections.Images.add(image);
+                var image =  new Images.imageModel({id:e.id, url:e.url, type:e.type, name: e.name});
+                imagesCollection.add(image);
                 this.countCroppedImage++;
                 
                 //Si le nombre de miniatures egal le nombre de thumbnail de la collection de thumbnail
-                if( this.countCroppedImage == app.collections.thumbnailCroppers.models.length ) {
+                if( this.countCroppedImage == thumbnailCroppers.models.length ) {
                     $.ajax({
                             url: 'assets/js/delete.php',
                             type: 'POST',
-                            data: { url : app.views.thumbnailcroppersView.urlImage }
+                            data: { url : thumbnailCroppersView.urlImage }
                     });
                     
                     // On vide le template de recadrage
-                    app.views.thumbnailcroppersView.clean();
+                    thumbnailCroppersView.clean();
                 }
         },
         
@@ -150,5 +160,8 @@ app.Views.main = Backbone.View.extend({
             console.log("Renvoi le nouvel ordre : ", data);
         }
     
+    });
+    
+    return main;
 });
 

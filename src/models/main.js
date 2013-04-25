@@ -3,17 +3,26 @@
  */
 // Modèle prinicipal.
 // Instancie la vue principale et lance le rendu
-app.Models.main = Backbone.Model.extend({
-
-    defaults:{
-            url_images: "/",
-            wrapper : $(),
-            thumbs : null
-    },
+define([
+  'underscore',
+  'backbone',
+  'views/main'
+], function(_, Backbone, mainView) {
     
-    initialize:function(){
-        app.views.main = new app.Views.main({model:this});
-        app.views.main.render();
-    }
+    var Main = Backbone.Model.extend({
 
-})
+        defaults:{
+                url_images: "/",
+                wrapper : $(),
+                thumbs : null
+        },
+
+        initialize: function(){
+            view = new mainView({model:this});
+            view.render();
+        }
+
+    });
+
+    return Main;
+});

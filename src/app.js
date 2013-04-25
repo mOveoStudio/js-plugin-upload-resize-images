@@ -23,30 +23,15 @@ define([
   'jquery',
   'underscore',
   'backbone',
-  'src/modules/models.js'
-], function($, _, Backbone, Models){
+  'models/main'
+], function($, _, Backbone, Main){
     
-    
-console.log(Models);
-// Déclaration de l'espace de nom
-var app = {
   
-  // Les classes
-  Collections: {},
-  Models: {},
-  Views: {},
-  Templates: {},
   
-  // Les instances
-  collections: {},
-  models: {},
-  views: {},
-  templates: {},
-  
-  init: function () {
+  var init = function () {
       
     //Initialisation du model principal
-    app.models.main = new app.Models.main({
+    main = new Main({
             "wrapper" : $("#thumbnailsManagerJS"),
             "url_images" : "assets/",
             "thumbs" : [{
@@ -68,15 +53,12 @@ var app = {
             ]
     });
     
+   
     
-  }
+    
 };
-
-$(document).ready(function () {
-
-  // On lance l'application une fois que notre HTML est chargé
-  app.init();
-  
-}) ;
+ return {
+    init :  init
+}
 
 })

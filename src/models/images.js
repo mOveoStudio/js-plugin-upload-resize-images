@@ -2,19 +2,33 @@
  * LES MODELES/COLLECTIONS CONCERNANT LA GESTION DES IMAGES
  */
 
-// Declaration du model Image
-app.Models.Image = Backbone.Model.extend({
-    defaults:{
-            id: "",
-            title : "",
-            url : ""
+define([
+  'underscore',
+  'backbone'
+], function(_, Backbone, JST, Images) {
+    
 
-    }
-});
+    // Declaration du model Image
+    var Image = Backbone.Model.extend({
+        defaults:{
+                id: "",
+                title : "",
+                url : ""
+
+        }
+    });
 
 
-// Declaration de la collection de content
-app.Collections.Images = Backbone.Collection.extend({
-            model: app.Models.Image
-            //localStorage : new Store("mvo_images"),
+    // Declaration de la collection de content
+    var Images = Backbone.Collection.extend({
+                model: Image
+                //localStorage : new Store("mvo_images"),
+    });
+
+    // Retourne le model et la collection
+    return {
+        imageModel : Image,
+        imagesCollection : Images
+    };
+
 });

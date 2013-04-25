@@ -1,5 +1,12 @@
 /*
  * LES MODELES/COLLECTIONS CONCERNANT L'UPLOAD DES FICHIERS IMAGES
  */
-// Modele fichier upload
-app.Models.Uploader = Backbone.Model.extend({})
+define([
+  'underscore',
+  'backbone'
+], function(_, Backbone) {
+    // Modele fichier upload
+    var uploadModel = Backbone.Model.extend({});
+    
+    return uploadModel;
+});
