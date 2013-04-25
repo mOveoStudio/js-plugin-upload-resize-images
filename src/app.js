@@ -19,7 +19,15 @@
  * @param images : liste des images
  */
 
-
+define([
+  'jquery',
+  'underscore',
+  'backbone',
+  'src/modules/models.js'
+], function($, _, Backbone, Models){
+    
+    
+console.log(Models);
 // Déclaration de l'espace de nom
 var app = {
   
@@ -71,3 +79,4 @@ $(document).ready(function () {
   
 }) ;
 
+})
