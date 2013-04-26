@@ -59,7 +59,7 @@ JST['template/imagesCollection'] = _.template(
 
 // Template module Upload
 JST['template/uploaderModule'] = _.template(
-'<div id="moduleUpload" class="span12">\
+'<div id="moduleUpload">\
                         <form enctype="multipart/form-data" class="formfileupload">\
                                 <div class="row">\
                                 <div class="span3">\

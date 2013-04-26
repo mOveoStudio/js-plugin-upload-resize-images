@@ -12,24 +12,61 @@
 <body>
 		
 		<div class="container">
-		<div class="page-header">
-		<h1>Plugin mOveo<small>...avec un peu de bootstrap de twitter</small></h1>
+		<div class="page-header row">
+		<h2>Plugin Thumbnails Manager<small>...avec un peu de bootstrap de twitter</small></h2>
 		</div>
 		
-		<h3>Gestion des images<br/><small>Gestion avancée des uploads d'images : ajouter une nouvelle image, supprimer une image, changer l'ordre des images...</small></h3>
+                <div class="page-header row">
+		<h3>Formulaire // Nouvel article<br/><small>avec un diaporama d'images</small></h3>
+                </div>
+                    
 		
 		<div class="row">
+                    <form action="#" method="POST" class="form-horizontal">
+                            <div class="control-group">
+                            <label class="control-label" for="title">Titre Article</label>
+                            <div class="controls">
+                                <input class="span8" type="text" id="title" name="title" placeholder="">
+                            </div>
+                            </div>
+                            <div class="control-group">
+                            <label class="control-label" for="chapo">Chapo</label>
+                            <div class="controls">
+                            <input class="span8" type="text" id="chapo" name="chapo" placeholder="">
+                            </div>
+                            </div>
+                            <div class="control-group">
+                            <label class="control-label" for="text">Contenu de l'article</label>
+                            <div class="controls">
+                            <textarea class="span8" rows="3" id="text" name="text"></textarea>
+                            </div>
+                            </div>
+                            <div class="control-group">
+                            <label class="control-label" for="text">Images</label>
+                            <div class="controls">
+                                    <!-- DIV PRINCIPALE DU PLUGIN -->
+                                    <div id="thumbnailsManagerJS"></div>
+                                    <!-- #div -->
+                                
+                            
+                            </div>
+                            </div>
+                                
+                            <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Enregistrer l'article</button>
+                            </div>
+                    </form>
                     
-                    <!-- DIV PRINCIPALE DU PLUGIN -->
-                    <div id="thumbnailsManagerJS"></div>
-                    <!-- #div -->
+                     
 			
 		</div>
 		
 	
 	</div>
     
+        <script src="assets/js/jquery-min.js"></script>
         <script data-main="mvo-thumbnail-plugin" src="assets/js/require.js"></script>
+
 
 </body>
 

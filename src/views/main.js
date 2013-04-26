@@ -1,6 +1,6 @@
-    /*
-     * VUE PRINCIPALE DE L'APPLI
-     */
+/*
+ * VUE PRINCIPALE DE L'APPLI
+ */
     
 define([
   'underscore',
@@ -28,7 +28,7 @@ define([
                 //Initialisation des views des elements de l'appli
                 this.thumbnailsModuleHTML = $(JST['template/thumbnailsModule']());
                 this.uploadModuleHTML = $(JST['template/uploaderModule']());
-                this.imagesModuleHTML = $("<div id='moduleSortImages' class='span12'/>");
+                this.imagesModuleHTML = $("<div id='moduleSortImages'/>");
 
                 // On ajoute les div a l'element principal #wrapper
                 $(this.el).append(this.uploadModuleHTML);

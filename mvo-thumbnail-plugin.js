@@ -1,3 +1,4 @@
+// Liste et paths des fichiers dependants
 require.config({
   shim: {
     underscore: {
@@ -29,8 +30,17 @@ require.config({
 
 });
 
-require([
+// Chargement du fichier principale de l'app (app.js) et lancemement de l'initialisation
+define([
   'src/app'
-], function(App){
-  App.init();
+], function(app){
+    
+     app.init();
+     
+     
+     
+     /*var MyPlugin = app;
+     return MyPlugin;*/
+    
+    
 });

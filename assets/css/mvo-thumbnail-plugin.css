@@ -261,3 +261,12 @@ form.formfileupload  .progress-upload .text{
 	color:#8B8B8B;
 	line-height:15px;
 }
+
+/*************************************
+A SUPPRIMER !!
+**************************************/
+input[type="text"] {
+   height: 30px;
+   font-size: 12px;
+   line-height: 25px;
+}
