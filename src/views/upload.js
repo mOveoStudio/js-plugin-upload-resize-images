@@ -24,8 +24,10 @@ define([
 
             // Lorsque le champ uploadfile est modifie
             inputFileChange : function(){
-
-                    var formData = new FormData($(this.el).find(".formfileupload")[0]);
+                    var fileInput = $(".formfileupload").find('#fileUpload')[0];
+                    var file = fileInput.files[0];
+                    var formData = new FormData();
+                    formData.append('fileUpload',file);
 
                     $.ajax({
                             url: 'assets/js/upload.php',

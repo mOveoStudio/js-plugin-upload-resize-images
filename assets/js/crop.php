@@ -1,12 +1,6 @@
 <?php
 
-/**
- * Jcrop image cropping plugin for jQuery
- * Example cropping script
- * @copyright 2008-2009 Kelly Hallman
- * More info: http://deepliquid.com/content/Jcrop_Implementation_Theory.html
- */
-
+var_dump($_SERVER['REQUEST_METHOD']); 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
 	$targ_w = $_POST['tw'];
@@ -19,8 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	
 	$path = "../thumbs/";
 
-	imagecopyresampled($dst_r,$img_r,0,0,$_POST['x'],$_POST['y'],
-	$targ_w,$targ_h,$_POST['w'],$_POST['h']);
+	if(!imagecopyresampled($dst_r,$img_r,0,0,$_POST['x'],$_POST['y'], $targ_w,$targ_h,$_POST['w'],$_POST['h'])) echo "probleme !";
 	$num = 0;
 	do{
 	
@@ -39,3 +32,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	$arr = array('id' => $name, 'name' => $_POST['name'], 'size' => $targ_w."x".$targ_h, 'url' => 'assets/thumbs/' . $namefile, 'type' => $_POST['type']);
 	echo json_encode($arr);
 }
+?>

@@ -59,12 +59,11 @@ JST['template/imagesCollection'] = _.template(
 
 // Template module Upload
 JST['template/uploaderModule'] = _.template(
-'<div id="moduleUpload">\
-                        <form enctype="multipart/form-data" class="formfileupload">\
+                                '<div id="moduleUpload" class="formfileupload">\
                                 <div class="row">\
                                 <div class="span3">\
                                 <div class="fileupload fileupload-new" data-provides="fileupload">\
-                                        <span class="btn btn-file btn-primary"><span class="fileupload-new"><i class="icon-upload icon-white"></i> Upload une nouvelle image</span><input type="file" id="mFile" name="mFile"/></span>\
+                                        <span class="btn btn-file btn-primary"><span class="fileupload-new"><i class="icon-upload icon-white"></i> Upload une nouvelle image</span><input type="file" id="fileUpload" name="fileUpload"/></span>\
                                         <span class="fileupload-preview"></span>\
                                 </div>\
                                 </div>\
@@ -78,7 +77,6 @@ JST['template/uploaderModule'] = _.template(
                                 </div>\
                                 </div>\
                                 <input type="button" value="Upload" />\
-                                </form>\
                                 <!--<a href="#myModal" role="button" class="btn btn-primary" data-toggle="modal"><i class="icon-upload icon-white"></i> Upload une nouvelle image</a>-->\
                         </div>'
     

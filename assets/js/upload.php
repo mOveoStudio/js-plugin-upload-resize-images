@@ -1,7 +1,6 @@
 <?php
 $UploadDirectory    = '../temp/'; //Upload Directory, ends with slash & make sure folder exist
 
-
 if (!file_exists($UploadDirectory)) {
     //destination folder does not exist
     echo("Make sure Upload directory exist!");
@@ -9,23 +8,23 @@ if (!file_exists($UploadDirectory)) {
 
 
 
-    if(!isset($_FILES['mFile']))
+    if(!isset($_FILES['fileUpload']))
     {
         //required variables are empty
         echo("File is empty!");
     }
 
 
-    if($_FILES['mFile']['error'])
+    if($_FILES['fileUpload']['error'])
     {
         //File upload error encountered
-        echo(upload_errors($_FILES['mFile']['error']));
+        echo(upload_errors($_FILES['fileUpload']['error']));
     }
 
-    $FileName           = strtolower($_FILES['mFile']['name']); //uploaded file name
+    $FileName           = strtolower($_FILES['fileUpload']['name']); //uploaded file name
     $ImageExt           = substr($FileName, strrpos($FileName, '.')); //file extension
-    $FileType           = $_FILES['mFile']['type']; //file type
-    $FileSize           = $_FILES['mFile']["size"]; //file size
+    $FileType           = $_FILES['fileUpload']['type']; //file type
+    $FileSize           = $_FILES['fileUpload']["size"]; //file size
     $RandNumber         = rand(0, 9999999999); //Random number to make each filename unique.
     $uploaded_date      = date("Y-m-d H:i:s");
 
@@ -51,7 +50,7 @@ if (!file_exists($UploadDirectory)) {
     $NewFileName = preg_replace(array('/s/', '/.[.]+/', '/[^w_.-]/'), array('_', '.', ''), strtolower($FileName));
     $NewFileName = $NewFileName.'_'.$RandNumber.$ImageExt;
    //Rename and save uploded file to destination folder.
-   if(move_uploaded_file($_FILES['mFile']["tmp_name"], $UploadDirectory . $NewFileName ))
+   if(move_uploaded_file($_FILES['fileUpload']["tmp_name"], $UploadDirectory . $NewFileName ))
    {
         //connect & insert file record in database
         //$dbconn = mysql_connect($MySql_hostname, $MySql_username, $MySql_password)or echo("Unable to connect to MySQL");

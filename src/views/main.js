@@ -117,12 +117,12 @@ define([
                         url : "assets/js/crop.php",
                         dataType:"json",
                         data : {
-                                x : coord.x, 
-                                y : coord.y, 
-                                h : coord.h, 
-                                w: coord.w, 
-                                tw: model.get('size')[0], 
-                                th: model.get('size')[1], 
+                                x : Math.round(coord.x), 
+                                y : Math.round(coord.y), 
+                                h : Math.round(coord.h), 
+                                w: Math.round(coord.w), 
+                                tw: Math.round(model.get('size')[0]), 
+                                th: Math.round(model.get('size')[1]), 
                                 src: $('#target').attr('src'), 
                                 name: 'img-generate_' + model.get('size')[0] + "x" + model.get('size')[1],
                                 type: model.get('type')

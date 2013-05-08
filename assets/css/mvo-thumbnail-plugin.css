@@ -227,11 +227,11 @@ img.jcrop-preview {
 	display:block;
 }
 
-form.formfileupload input[type="button"]{
+.formfileupload input[type="button"]{
 	display:none;
 }
 
-form.formfileupload  .progress-upload{
+.formfileupload  .progress-upload{
 	padding:5px;
 	background:#f5f5f5;
 	/*border:solid 1px #D8D8D8;*/
@@ -240,21 +240,21 @@ form.formfileupload  .progress-upload{
 	display:none;
 	
 }
-form.formfileupload  .progress-upload:after{
+.formfileupload  .progress-upload:after{
 	content: "";
     display: table;
     line-height: 0;
 	clear:both;
 }
 
-form.formfileupload .progress{
+.formfileupload .progress{
 	margin-bottom:0;
 	width:350px;
 	float:left;
 	height:15px;
 }
 
-form.formfileupload  .progress-upload .text{
+.formfileupload  .progress-upload .text{
 	width:250px;
 	float:left;
 	margin: 0 0 0 15px;
