@@ -66,7 +66,7 @@
         <script src="mvo-thumbnail-plugin.js"></script>
 		
         <script>
-                myPlugin.init({
+                ThumbnailsManager.init({
                     "wrapper" : "#thumbnailsManager",
                     "url_images" : "assets/",
                     "thumbs" : [{
@@ -83,10 +83,25 @@
                                     type : "main_thumb"
 
                             }
-
-
-                    ]
+                    ],
+                    "onSortImages" : sortImages,
+                    "onCreateThumnail" : createThumbnails,
+                    "onUploadFile" : uploadFile
             });
+            
+            function sortImages(arr){
+                
+                console.log("bien reçu !!",arr);
+            };
+            
+            function createThumbnails(images){
+                console.log("bien reçu !!", images);
+            };
+            
+            function uploadFile(file){
+                console.log("bien reçu !!", file);
+            }
+            
         </script>
 
 </body>

@@ -14,7 +14,11 @@ define([
         defaults:{
                 url_images: "/",
                 wrapper : $(),
-                thumbs : null
+                thumbs : null,
+                onCreateThumbnail : function(){},
+                onSortImages : function(){},
+                onUploadFile: function() {}
+                
         },
 
         initialize: function(){

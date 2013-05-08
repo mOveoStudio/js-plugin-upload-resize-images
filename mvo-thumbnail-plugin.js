@@ -20,9 +20,9 @@
  */
 (function (global) {
 
-	global.myPlugin = global.myPlugin || {};
+	global.ThumbnailsManager = global.ThumbnailsManager || {};
 	
-	myPlugin.init = init;
+	ThumbnailsManager.init = init;
 	
 	function init(arr) {
 		// Liste et paths des fichiers dependants

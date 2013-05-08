@@ -20,7 +20,7 @@ define([
 
         initialize : function(){
             this.el = this.model.get('wrapper');
-            _.bindAll(this,'generateImages','afterImageGenerate');
+            _.bindAll(this,'generateImages','afterImageGenerate','sortImages');
         },
 
         render: function(){
@@ -70,7 +70,14 @@ define([
         // TODO : Faire fonctionner ce code avec la collection Images ?
         generateImageCropper : function (d){
 
+                
+                // On lance la fonction déclarée avec en parametre l'image uploadee
+                uploadFileFunction = this.model.get("onUploadFile");
 
+                if(uploadFileFunction != null)
+                    uploadFileFunction(d);
+                
+                
                 $('body').find(".progress-upload").hide();
 
 
@@ -153,11 +160,20 @@ define([
                     
                     // On vide le template de recadrage
                     thumbnailCroppersView.clean();
+
+                    // On lance la fonction déclarée avec en parametre la liste des images
+                    createThumbnailsFunction = this.model.get("onCreateThumbnail");
+
+                    if(createThumbnailsFunction != null) createThumbnailsFunction(imagesCollection);
                 }
         },
         
         sortImages : function(data){
-            console.log("Renvoi le nouvel ordre : ", data);
+                
+                // On lance la fonction déclarée avec en parametre le nouvel ordre
+                sortFunction = this.model.get("onSortImages");
+
+                if(sortFunction != null) sortFunction(data);
         }
     
     });
