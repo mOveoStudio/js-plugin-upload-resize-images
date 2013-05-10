@@ -44,8 +44,9 @@ define([
                         'click #generate-image' : "clickOnGenerateButton"
                 },
 
-                clickOnGenerateButton : function (){
+                clickOnGenerateButton : function (e){
                     this.trigger("endThumbnailsSelection");
+                    e.preventDefault();
                 },
 
                 // Affichage du module de thumbnail

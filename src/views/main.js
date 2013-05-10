@@ -118,8 +118,8 @@ define([
                 // Recadrage de chacune des miniatures 
                 thumbnailCroppers.each(function(model){
                 coord = model.get("coord");
-
-                    $.ajax({
+                
+                    Backbone.ajax({
                         type: "POST",
                         url : "assets/js/crop.php",
                         dataType:"json",
